@@ -16,16 +16,21 @@ class RussianDollCaching
     /** @var View */
     protected $view;
 
+    /** @var bool */
+    protected $shouldCache;
+
     /**
      * RussianDollCaching constructor.
      *
      * @param  \Illuminate\Contracts\Cache\Repository $cache
      * @param  \Illuminate\Contracts\View\Factory     $view
+     * @param  bool                                   $shouldCache
      */
-    public function __construct( Cache $cache, View $view )
+    public function __construct( Cache $cache, View $view, $shouldCache = true )
     {
-        $this->cache = $cache;
-        $this->view  = $view;
+        $this->cache       = $cache;
+        $this->view        = $view;
+        $this->shouldCache = $shouldCache;
     }
 
     /**
@@ -40,6 +45,10 @@ class RussianDollCaching
     public function get( $view, $data, $prefix = null )
     {
         $key = $this->makeKey( $view, (array)$data, $prefix );
+
+        if (!$this->shouldCache) {
+            return $this->view->make( $view, $data )->render();
+        }
 
         return $this->getCache()->rememberForever( $key, function () use ( $view, $data ) {
             return $this->view->make( $view, $data )->render();

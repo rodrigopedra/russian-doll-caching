@@ -1,5 +1,7 @@
 # Russian Doll Caching for Laravel 5.1 LTS and Laravel 5.2
 
+Efficient view caching.
+
 Inspired by the excellent series at https://laracasts.com/series/russian-doll-caching-in-laravel .
 
 Watch that series to understand the concepts around it and to use it properly, 
@@ -7,23 +9,35 @@ for example: how to invalidate the cache upwards.
 
 ## Installation
 
+In your terminal/shell run:
+
 ```
 composer require rodrigopedra/russian-doll-caching
 ```
 
-## Configuration
-
-Add the provider to your config/app.php:
+Add the provider to your config/app.php service providers array:
 
 ```php
-// in your config/app.php add the provider to the service providers key
+/* ... */
 
 'providers' => [
     /* ... */
     
     RodrigoPedra\RussianDollCaching\RussianDollCachingServiceProvider::class,
-]
+],
+
+/* ... */
 ```
+
+## Configuration
+
+In your terminal/shell run:
+
+```
+php artisan vendor:publish --provider="RodrigoPedra\RussianDollCaching\RussianDollCachingServiceProvider"
+```
+
+You can configure a `should_cache` constraint, so you can skip caching, for example, while developing locally.
 
 ## Usage
 
