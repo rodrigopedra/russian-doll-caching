@@ -69,7 +69,7 @@ then the view will be cached only by its name hash which can lead to unexpected 
 - Can I flush just the items cached by this package?
   
   If you use a caching mechanism that supports tagging (`memcached` or `redis`) all the cached items are created with 
-  a `russian` tag. So you can clear only these items running `Cache::tags('russian')->flush()` in `php artisan cache:clear`
+  a `russian` tag. So you can clear only these items running `\Cache::tags('russian')->flush()` in `php artisan tinker`
 
 
 ### License
