@@ -52,7 +52,7 @@ class RussianDollCaching
         }
 
         return $this->getCache( (array)$tags )->rememberForever( $key, function () use ( $view, $data ) {
-            return $this->view->make( $view, $data )->render();
+            return $this->view->make( $view, (array)$data )->render();
         } );
     }
 
