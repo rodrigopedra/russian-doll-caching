@@ -1,0 +1,24 @@
+{
+  "name": "rodrigopedra/russian-doll-caching",
+  "description": "Laravel Russian Doll Caching",
+  "keywords": ["russian doll caching", "rodrigopedra", "laravel"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Rodrigo Pedra Brum",
+      "email": "rodrigo.pedra@gmail.com"
+    }
+  ],
+  "require": {
+    "illuminate/support": ">=5.2",
+    "illuminate/database": ">=5.2",
+    "illuminate/cache": ">=5.2",
+    "nesbot/carbon": "~1.20"
+  },
+  "autoload": {
+    "psr-4": {
+      "RodrigoPedra\\": "src/"
+    }
+  },
+  "minimum-stability": "dev"
+}
