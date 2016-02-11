@@ -46,13 +46,30 @@ Use the `@russian` directive in your blade templates the same way you would use 
 You can optionally inform a custom prefix that will be prepended to the cache key.
 
 ```php
-    @russian('path.to.other.view', compact('user', 'articles'), 'version-prefix')
+    @russian('path.to.view', compact('user', 'articles'), 'version-prefix')
 
-    @russian('path.to.view', compact('user', 'articles'))
+    @russian('path.to.other.view', compact('user', 'articles'))
+    
+    {{-- caution here, the cache key will only be the view name hash! --}}
+    @russian('path.to.another.view')
 ```
 
 ***IMPORTANT*** if no prefix is informed and the first element in the `data` array is not an Eloquent model, 
 then the view will be cached only by its name hash which can lead to unexpected behavior.
+
+You can also pass multiple prefixes as an `array`, that will be prepended to the cache item's key:
+
+```php
+    @russian('path.to.other.view', compact('user'), [ 'v1', 'home' ])
+```
+
+If your cache mechanism supports tagging, like `memcached` or `redis`, all cache items will be cached with a `russian` tag. 
+
+You can inform an `array` of additional tags as the fourth parameter:
+
+```php
+    @russian('path.to.other.view', compact('user'), 'v3', ['tenant-1'])
+```
 
 ## FAQ
 
