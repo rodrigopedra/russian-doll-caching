@@ -20,7 +20,7 @@ Add the provider to your config/app.php:
 'providers' => [
     /* ... */
     
-    'RodrigoPedra\RussianDollCaching\RussianDollCachingServiceProvider',
+    RodrigoPedra\RussianDollCaching\RussianDollCachingServiceProvider::class,
 ]
 ```
 
