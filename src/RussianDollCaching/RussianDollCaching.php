@@ -3,7 +3,6 @@
 namespace RodrigoPedra\RussianDollCaching;
 
 use Carbon\Carbon;
-use InvalidArgumentException;
 use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\View\Factory as View;
@@ -23,22 +22,20 @@ class RussianDollCaching
         $this->view  = $view;
     }
 
-    public function get( $view, array $data, $key = false )
+    public function get( $view, array $data, $key = null )
     {
+        $parts = array_filter( [ $key, md5( $view ) ] );
+
         $model = reset( $data );
 
-        if ($key === false) {
-            if (!$model instanceof Model) {
-                throw new InvalidArgumentException( 'First item in data array must be an Eloquent model' );
-            }
-
-            // would not cache until updated_at is not null
+        if ($model instanceof Model) {
+            // will generate a new cache until updated_at is not null
             $timestamp = $model->updated_at ?: Carbon::now();
 
-            $key = join( '/', [ md5( $view ), get_class( $model ), $model->getKey(), $timestamp->timestamp ] );
-        } else {
-            $key = join( '/', [ md5( $view ), $key ] );
+            $parts = array_merge( $parts, [ get_class( $model ), $model->getKey(), $timestamp->timestamp ] );
         }
+
+        $key = join( '/', $parts );
 
         if ($this->cache instanceof TaggableStore) {
             return $this->cache->tags( 'russian' )->rememberForever( $key, function () use ( $view, $data ) {

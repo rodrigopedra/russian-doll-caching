@@ -29,7 +29,7 @@ Add the provider to your config/app.php:
 
 Use the `@russian` directive in your blade templates the same way you would use the `@include` directive.
 
-You can optionally inform a custom key that will be cached with the hashed view name.
+You can optionally inform a custom key that will be cached added to the cache key.
 
 ```php
     @russian('path.to.other.view', compact('user', 'articles'), 'my-custom-key')
@@ -37,7 +37,15 @@ You can optionally inform a custom key that will be cached with the hashed view 
     @russian('path.to.view', compact('user', 'articles'))
 ```
 
-***IMPORTANT*** if key is not informed the first element in the `data` array must be an Eloquent model.
+***IMPORTANT*** if key is not informed and the first element in the `data` array is not an Eloquent model, 
+then the view will be cached only by its name which can lead to unexpected behavior.
+
+## FAQ
+
+- *Why name this directive `@russian` and not `@cache`?
+
+As a directive named `@cache` can be added to the official Laravel in a future release, this choice aims to
+avoid conflicts with it.
 
 ### License
 
