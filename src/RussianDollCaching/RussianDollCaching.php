@@ -32,7 +32,9 @@ class RussianDollCaching
             // will generate a new cache until updated_at is not null
             $timestamp = $model->updated_at ?: Carbon::now();
 
-            $parts = array_merge( $parts, [ get_class( $model ), $model->getKey(), $timestamp->timestamp ] );
+            // use the + array union operator
+            // @see http://php.net/manual/en/function.array-merge.php
+            $parts = $parts + [ get_class( $model ), $model->getKey(), $timestamp->timestamp ];
         }
 
         $key = join( '/', $parts );
