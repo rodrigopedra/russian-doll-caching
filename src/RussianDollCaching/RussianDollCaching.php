@@ -36,21 +36,22 @@ class RussianDollCaching
     /**
      * Returns the cached view
      *
-     * @param  string      $view
-     * @param  mixed       $data
-     * @param  string|null $prefix
+     * @param  string     $view
+     * @param  mixed|null $data
+     * @param  mixed|null $prefix
+     * @param  mixed|null $tags
      *
      * @return string
      */
-    public function get( $view, $data, $prefix = null )
+    public function get( $view, $data = null, $prefix = null, $tags = null )
     {
-        $key = $this->makeKey( $view, (array)$data, $prefix );
+        $key = $this->makeKey( $view, (array)$data, (array)$prefix );
 
         if (!$this->shouldCache) {
             return $this->view->make( $view, $data )->render();
         }
 
-        return $this->getCache()->rememberForever( $key, function () use ( $view, $data ) {
+        return $this->getCache( (array)$tags )->rememberForever( $key, function () use ( $view, $data ) {
             return $this->view->make( $view, $data )->render();
         } );
     }
@@ -58,21 +59,15 @@ class RussianDollCaching
     /**
      * Makes the cache's key from the data
      *
-     * @param  string      $view
-     * @param  array       $data
-     * @param  string|null $prefix
+     * @param  string $view
+     * @param  array  $data
+     * @param  array  $prefix
      *
      * @return string
      */
-    protected function makeKey( $view, array $data, $prefix )
+    protected function makeKey( $view, array $data, array $prefix )
     {
-        $parts = [ ];
-
-        if (!empty( $prefix )) {
-            $parts[] = $prefix;
-        }
-
-        $parts[] = md5( $view );
+        $parts = array_merge( $prefix, [ md5( $view ) ] );
 
         $model = reset( $data );
 
@@ -82,7 +77,7 @@ class RussianDollCaching
 
             // use the + array union operator
             // @see http://php.net/manual/en/function.array-merge.php
-            $parts = $parts + [ get_class( $model ), $model->getKey(), $timestamp->timestamp ];
+            $parts = array_merge( $parts, [ get_class( $model ), $model->getKey(), $timestamp->timestamp ] );
         }
 
         return join( '/', $parts );
@@ -91,12 +86,14 @@ class RussianDollCaching
     /**
      * Returns the current cache instance
      *
-     * @return  \Illuminate\Contracts\Cache\Repository
+     * @param  array $tags
+     *
+     * @return Cache
      */
-    protected function getCache()
+    protected function getCache( array $tags )
     {
         if ($this->cache instanceof TaggableStore) {
-            return $this->cache->tags( 'russian' );
+            return $this->cache->tags( array_merge( [ 'russian' ], $tags ) );
         }
 
         return $this->cache;

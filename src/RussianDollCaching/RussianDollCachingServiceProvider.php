@@ -2,6 +2,7 @@
 
 namespace RodrigoPedra\RussianDollCaching;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class RussianDollCachingServiceProvider extends ServiceProvider
@@ -10,7 +11,7 @@ class RussianDollCachingServiceProvider extends ServiceProvider
     {
         $this->publishes( [ __DIR__ . DIRECTORY_SEPARATOR . 'config.php' => config_path( 'russian.php' ) ] );
 
-        $this->app[ 'blade.compiler' ]->directive( 'russian', function ( $expression ) {
+        Blade::directive( 'russian', function ( $expression ) {
             $className = RussianDollCaching::class;
 
             return "<?php echo app('{$className}')->get{$expression}; ?>";
