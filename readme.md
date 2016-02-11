@@ -45,7 +45,7 @@ then the view will be cached only by its name which can lead to unexpected behav
 - *Why name this directive `@russian` and not `@cache`?
 
 As a directive named `@cache` can be added to the official Laravel in a future release, this choice aims to
-avoid conflicts with it.
+avoid any conflicts.
 
 ### License
 
