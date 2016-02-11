@@ -1,6 +1,6 @@
 # Russian Doll Caching for Laravel 5.2
 
-Inspired by the excellent series in https://laracasts.com/series/russian-doll-caching-in-laravel
+Inspired by the excellent series at https://laracasts.com/series/russian-doll-caching-in-laravel
 
 See that series to understand the concepts and use it properly.
 
