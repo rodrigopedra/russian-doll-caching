@@ -9,14 +9,16 @@ class RussianDollCachingServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app[ 'blade.compiler' ]->directive( 'russian', function ( $expression ) {
-            return "<?php echo app('\\RodrigoPedra\\RussianDollCaching\\RussianDollCaching')->get{$expression}; ?>";
+            $className = RussianDollCaching::class;
+
+            return "<?php echo app('{$className}')->get{$expression}; ?>";
         } );
     }
 
     public function register()
     {
         $this->app->singleton( RussianDollCaching::class, function ( $app ) {
-            return new RussianDollCaching( $app[ 'cache' ]->store(), $app[ 'view' ] );
+            return new RussianDollCaching( $app[ 'cache.store' ], $app[ 'view' ] );
         } );
     }
 }
