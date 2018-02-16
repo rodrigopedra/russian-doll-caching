@@ -2,11 +2,8 @@
 
 namespace RodrigoPedra\RussianDollCaching;
 
-use Carbon\Carbon;
-use Illuminate\Cache\TaggableStore;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\View\Factory as View;
 use Illuminate\Contracts\Cache\Repository as Cache;
+use Illuminate\Contracts\View\Factory as View;
 
 class RussianDollCaching
 {
@@ -38,21 +35,24 @@ class RussianDollCaching
      *
      * @param  string     $view
      * @param  mixed|null $data
-     * @param  mixed|null $prefix
-     * @param  mixed|null $tags
+     * @param  mixed|null $prefixes
      *
      * @return string
      */
-    public function get( $view, $data = null, $prefix = null, $tags = null )
+    public function get( $view, $data = null, $prefixes = null )
     {
-        $key = $this->makeKey( $view, (array)$data, (array)$prefix );
+        $data = array_wrap( $data );
 
         if (!$this->shouldCache) {
             return $this->view->make( $view, $data )->render();
         }
 
-        return $this->getCache( (array)$tags )->rememberForever( $key, function () use ( $view, $data ) {
-            return $this->view->make( $view, (array)$data )->render();
+        $prefixes = array_wrap( $prefixes );
+
+        $key = $this->normalizeCacheKey( $view, $data, $prefixes );
+
+        return $this->getCache()->rememberForever( $key, function () use ( $view, $data ) {
+            return $this->view->make( $view, $data )->render();
         } );
     }
 
@@ -61,39 +61,34 @@ class RussianDollCaching
      *
      * @param  string $view
      * @param  array  $data
-     * @param  array  $prefix
+     * @param  array  $prefixes
      *
      * @return string
      */
-    protected function makeKey( $view, array $data, array $prefix )
+    protected function normalizeCacheKey( $view, array $data, array $prefixes )
     {
-        $parts = array_merge( $prefix, [ md5( $view ) ] );
+        $item = reset( $data );
 
-        $model = reset( $data );
-
-        if ($model instanceof Model) {
-            // will generate a new cache until $model->updated_at is not null
-            $timestamp = $model->updated_at ?: Carbon::now();
-
-            // use the + array union operator
-            // @see http://php.net/manual/en/function.array-merge.php
-            $parts = array_merge( $parts, [ get_class( $model ), $model->getKey(), $timestamp->timestamp ] );
+        if (is_object( $item ) && method_exists( $item, 'getCacheKey' )) {
+            array_push( $prefixes, $item->getCacheKey() );
+        } elseif (is_object( $item ) && method_exists( $item, '__toString' )) {
+            array_push( $prefixes, md5( $item ) );
         }
 
-        return join( '/', $parts );
+        array_push( $prefixes, md5( $view ) );
+
+        return join( '/', $prefixes );
     }
 
     /**
      * Returns the current cache instance
      *
-     * @param  array $tags
-     *
      * @return Cache
      */
-    protected function getCache( array $tags )
+    protected function getCache()
     {
-        if ($this->cache instanceof TaggableStore) {
-            return $this->cache->tags( array_merge( [ 'russian' ], $tags ) );
+        if (method_exists( $this->cache, 'tags' )) {
+            return $this->cache->tags( 'russian' );
         }
 
         return $this->cache;

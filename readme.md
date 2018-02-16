@@ -1,4 +1,4 @@
-# Russian Doll Caching for Laravel 5.1 LTS and Laravel 5.2
+# Russian Doll Caching for Laravel 5.3, 5.4, 5.5 and 5.6
 
 Efficient view caching.
 
@@ -15,18 +15,19 @@ In your terminal/shell run:
 composer require rodrigopedra/russian-doll-caching
 ```
 
-Add the provider to your config/app.php service providers array:
+If you're using Laravel 5.3 or 5.4 you need to register the service provider in 
+your `config/app.php` providers array:
 
 ```php
-/* ... */
+// ... 
 
 'providers' => [
-    /* ... */
+    // ... 
     
     RodrigoPedra\RussianDollCaching\RussianDollCachingServiceProvider::class,
 ],
 
-/* ... */
+// ... 
 ```
 
 ## Configuration
@@ -54,29 +55,25 @@ You can optionally inform a custom prefix that will be prepended to the cache ke
     @russian('path.to.another.view')
 ```
 
-***IMPORTANT*** if no prefix is informed and the first element in the `data` array is not an Eloquent model, 
-then the view will be cached only by its name hash which can lead to unexpected behavior.
-
 You can also pass multiple prefixes as an `array`, that will be prepended to the cache item's key:
 
 ```php
     @russian('path.to.other.view', compact('user'), [ 'v1', 'home' ])
 ```
 
-If your cache mechanism supports tagging, like `memcached` or `redis`, all cache items will be cached with a `russian` tag. 
+If your cache mechanism supports tagging, like `memcached` or `redis`, all cache items will be 
+cached with a `russian` tag. 
 
-You can inform an `array` of additional tags as the fourth parameter:
 
-```php
-    @russian('path.to.other.view', compact('user'), 'v3', ['tenant-1'])
-```
+### Key calculation
+
+The caching mechanism will try to use the first element in the `data` array as part of the cache key.
+
+You should use the `RussianCacheableModel` trait in your models or use the `RussianCacheableCollection` in 
+your custom collections. This traits add a `getCacheKey` method to this objects so you can 
+
 
 ## FAQ
-
-- Why name this directive `@russian` and not `@cache`?
-
-  As a directive named `@cache` can be added to the official Laravel in a future release, this choice aims 
-  to avoid any conflicts.
 
 - Why are my views not updating?
   

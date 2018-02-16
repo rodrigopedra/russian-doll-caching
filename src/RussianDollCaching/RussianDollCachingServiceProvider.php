@@ -11,10 +11,10 @@ class RussianDollCachingServiceProvider extends ServiceProvider
     {
         $this->publishes( [ __DIR__ . DIRECTORY_SEPARATOR . 'config.php' => config_path( 'russian.php' ) ] );
 
-        Blade::directive( 'russian', function ( $expression ) {
-            $className = RussianDollCaching::class;
+        $className = RussianDollCaching::class;
 
-            return "<?php echo app('{$className}')->get{$expression}; ?>";
+        Blade::directive( 'russian', function ( $expression ) use ( $className ) {
+            return "<?php echo app('{$className}')->get({$expression}); ?>";
         } );
     }
 
